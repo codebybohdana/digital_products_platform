@@ -26,3 +26,9 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+export function getCoverUrl(coverPath: string): string {
+  const filename = coverPath.split('/').pop() ?? '';
+  const origin = new URL(import.meta.env.VITE_API_URL as string).origin;
+  return `${origin}/uploads/covers/${filename}`;
+}

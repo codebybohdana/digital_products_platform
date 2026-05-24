@@ -25,6 +25,11 @@ function Navbar() {
 
             {user ? (
               <>
+                {user.role === 'author' && (
+                  <Link to="/products/add" className="text-gray-600 hover:text-gray-900">
+                    Add Product
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   className="text-gray-600 hover:text-gray-900"
