@@ -1,6 +1,7 @@
 const { z } = require("zod");
 const db = require("../db/pool");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 
 const productSchema = z.object({
   title: z.string().min(1).max(255),
@@ -43,7 +44,7 @@ async function getProduct(req, res, next) {
       `SELECT p.*, u.name as author_name
        FROM products p
        JOIN users u ON p.author_id = u.id
-       WHERE p.id = $1 AND p.is_active = true`,
+       WHERE p.id = $1`,
       [id]
     );
 
@@ -51,7 +52,24 @@ async function getProduct(req, res, next) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    return res.json({ product: rows[0] });
+    const product = rows[0];
+
+    if (!product.is_active) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        try {
+          const decoded = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+          if (decoded.id === product.author_id) {
+            return res.json({ product });
+          }
+        } catch {
+          // invalid token — fall through to 404
+        }
+      }
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    return res.json({ product });
   } catch (err) {
     next(err);
   }

@@ -8,6 +8,8 @@ import Profile from "./pages/Profile";
 import ProductDetail from "./pages/ProductDetail";
 import AddProduct from "./pages/AddProduct";
 import MyPurchases from "./pages/MyPurchases";
+import MyProducts from "./pages/MyProducts";
+import EditProduct from "./pages/EditProduct";
 
 function App() {
   return (
@@ -25,6 +27,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AddProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-products"
+              element={
+                <ProtectedRoute>
+                  <MyProducts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditProduct />
                 </ProtectedRoute>
               }
             />

@@ -1,0 +1,185 @@
+import { useEffect, useState } from 'react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { isAxiosError } from 'axios';
+import api from '../api/client';
+import { useAuth } from '../context/AuthContext';
+
+const CATEGORIES = ['Education', 'Design', 'Business', 'Programming', 'Other'] as const;
+
+export default function EditProduct() {
+  const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [permissionDenied, setPermissionDenied] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user || user.role !== 'author') return;
+    let cancelled = false;
+
+    async function fetchProduct() {
+      try {
+        const { data } = await api.get(`/products/${id}`);
+        if (cancelled) return;
+
+        const p = data.product;
+        if (p.author_id !== user!.id) {
+          setPermissionDenied(true);
+          return;
+        }
+
+        setTitle(p.title);
+        setDescription(p.description ?? '');
+        setPrice(String(p.price));
+        setCategory(p.category);
+      } catch (err) {
+        if (!cancelled) {
+          setLoadError(
+            isAxiosError(err) && err.response?.status === 404
+              ? 'Product not found.'
+              : 'Failed to load product.'
+          );
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchProduct();
+    return () => { cancelled = true; };
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!user || user.role !== 'author') {
+    return <Navigate to="/" replace />;
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitError(null);
+    setSubmitting(true);
+    try {
+      await api.put(`/products/${id}`, {
+        title,
+        description,
+        price: parseFloat(price),
+        category,
+      });
+      navigate('/my-products');
+    } catch (err) {
+      setSubmitError(
+        isAxiosError(err)
+          ? (err.response?.data?.error ?? 'Something went wrong.')
+          : 'Something went wrong.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (loading) {
+    return <p className="text-gray-500 text-center py-16">Loading...</p>;
+  }
+  if (loadError) {
+    return <p className="text-red-600 text-center py-16">{loadError}</p>;
+  }
+  if (permissionDenied) {
+    return (
+      <p className="text-red-600 text-center py-16">
+        You don't have permission to edit this product.
+      </p>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold text-gray-900 mb-8">Edit Product</h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white border border-gray-200 rounded-xl p-8 space-y-6"
+      >
+        {submitError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+            {submitError}
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+          <input
+            type="text"
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <textarea
+            rows={4}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Price ($) *</label>
+            <input
+              type="number"
+              required
+              min="0.01"
+              step="0.01"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+            <select
+              required
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            >
+              <option value="">Select category</option>
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="flex-1 bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 disabled:opacity-50 transition-colors"
+          >
+            {submitting ? 'Saving...' : 'Save Changes'}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/my-products')}
+            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

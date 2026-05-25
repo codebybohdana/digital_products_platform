@@ -44,7 +44,12 @@ function Profile() {
             </Link>
           )}
           {user.role === 'author' && (
-            <p className="text-sm text-gray-500">My Products — coming soon</p>
+            <Link
+              to="/my-products"
+              className="block text-sm font-medium text-gray-900 hover:underline"
+            >
+              My Products →
+            </Link>
           )}
         </div>
 
