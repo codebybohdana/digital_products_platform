@@ -3,6 +3,8 @@ import { Link, Navigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
+import ErrorMessage from '../components/ErrorMessage';
 
 interface MyProduct {
   id: number;
@@ -88,8 +90,8 @@ export default function MyProducts() {
         </Link>
       </div>
 
-      {loading && <p className="text-gray-500 text-center py-16">Loading...</p>}
-      {error && <p className="text-red-600 text-center py-16">{error}</p>}
+      {loading && <Spinner />}
+      {error && <ErrorMessage message={error} />}
 
       {!loading && !error && products.length === 0 && (
         <div className="text-center py-16">

@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import api, { getCoverUrl, triggerDownload } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
+import ErrorMessage from '../components/ErrorMessage';
 
 interface Product {
   id: number;
@@ -101,12 +103,10 @@ export default function ProductDetail() {
   }
 
   if (loading) {
-    return <p className="text-gray-500 text-center py-16">Loading...</p>;
+    return <Spinner />;
   }
   if (error || !product) {
-    return (
-      <p className="text-red-600 text-center py-16">{error ?? 'Product not found.'}</p>
-    );
+    return <ErrorMessage message={error ?? 'Product not found.'} />;
   }
 
   const price = parseFloat(product.price).toFixed(2);

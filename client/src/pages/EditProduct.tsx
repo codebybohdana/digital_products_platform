@@ -3,6 +3,8 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
+import ErrorMessage from '../components/ErrorMessage';
 
 const CATEGORIES = ['Education', 'Design', 'Business', 'Programming', 'Other'] as const;
 
@@ -85,17 +87,13 @@ export default function EditProduct() {
   }
 
   if (loading) {
-    return <p className="text-gray-500 text-center py-16">Loading...</p>;
+    return <Spinner />;
   }
   if (loadError) {
-    return <p className="text-red-600 text-center py-16">{loadError}</p>;
+    return <ErrorMessage message={loadError} />;
   }
   if (permissionDenied) {
-    return (
-      <p className="text-red-600 text-center py-16">
-        You don't have permission to edit this product.
-      </p>
-    );
+    return <ErrorMessage message="You don't have permission to edit this product." />;
   }
 
   return (

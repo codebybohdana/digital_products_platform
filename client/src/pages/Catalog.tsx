@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client';
 import ProductCard from '../components/ProductCard';
+import Spinner from '../components/Spinner';
+import ErrorMessage from '../components/ErrorMessage';
 
 interface Product {
   id: number;
@@ -54,12 +56,8 @@ export default function Catalog() {
         />
       </div>
 
-      {loading && (
-        <p className="text-gray-500 text-center py-16">Loading...</p>
-      )}
-      {error && (
-        <p className="text-red-600 text-center py-16">{error}</p>
-      )}
+      {loading && <Spinner />}
+      {error && <ErrorMessage message={error} />}
       {!loading && !error && products.length === 0 && (
         <p className="text-gray-500 text-center py-16">No products found.</p>
       )}

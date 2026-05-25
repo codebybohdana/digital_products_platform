@@ -3,6 +3,8 @@ import { Link, Navigate } from 'react-router-dom';
 import { getCoverUrl, triggerDownload } from '../api/client';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
+import ErrorMessage from '../components/ErrorMessage';
 
 interface Order {
   id: number;
@@ -60,12 +62,8 @@ export default function MyPurchases() {
     <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-8">My Purchases</h1>
 
-      {loading && (
-        <p className="text-gray-500 text-center py-16">Loading...</p>
-      )}
-      {error && (
-        <p className="text-red-600 text-center py-16">{error}</p>
-      )}
+      {loading && <Spinner />}
+      {error && <ErrorMessage message={error} />}
       {!loading && !error && orders.length === 0 && (
         <div className="text-center py-16">
           <p className="text-gray-500 mb-4">No purchases yet.</p>
