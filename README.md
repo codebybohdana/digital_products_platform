@@ -1,4 +1,4 @@
-# DIGITAL
+# Folio
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white&style=flat-square)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white&style=flat-square)
@@ -78,30 +78,34 @@ npm run dev
 ## API
 
 ### Auth
+
 \`\`\`
 POST /api/auth/register
 POST /api/auth/login
-GET  /api/auth/me
+GET /api/auth/me
 \`\`\`
 
 ### Products
+
 \`\`\`
-GET    /api/products
-GET    /api/products/:id
-POST   /api/products
-PUT    /api/products/:id
+GET /api/products
+GET /api/products/:id
+POST /api/products
+PUT /api/products/:id
 DELETE /api/products/:id
-GET    /api/products/my
-PATCH  /api/products/:id/toggle
+GET /api/products/my
+PATCH /api/products/:id/toggle
 \`\`\`
 
 ### Orders
+
 \`\`\`
 POST /api/orders
-GET  /api/orders/my
+GET /api/orders/my
 \`\`\`
 
 ### Files
+
 \`\`\`
 GET /api/files/download/:productId
 \`\`\`
@@ -111,10 +115,10 @@ GET /api/files/download/:productId
 ## Database
 
 \`\`\`sql
-users    — id, name, email, password_hash, role, created_at
+users — id, name, email, password_hash, role, created_at
 products — id, author_id, title, description, price, category,
-           file_path, file_name, cover_path, is_active, created_at
-orders   — id, user_id, product_id, price_paid, purchased_at
+file_path, file_name, cover_path, is_active, created_at
+orders — id, user_id, product_id, price_paid, purchased_at
 \`\`\`
 
 ---

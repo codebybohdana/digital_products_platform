@@ -14,8 +14,9 @@ function Navbar() {
     <nav className="bg-white border-b border-gray-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="text-xl font-bold text-gray-900">
-            DIGITAL
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/logo-icon.png" alt="" className="h-8 rounded-lg" />
+            <span className="font-bold text-lg text-gray-900">Folio</span>
           </Link>
 
           <div className="flex items-center gap-6">
@@ -25,8 +26,11 @@ function Navbar() {
 
             {user ? (
               <>
-                {user.role === 'author' && (
-                  <Link to="/products/add" className="text-gray-600 hover:text-gray-900">
+                {user.role === "author" && (
+                  <Link
+                    to="/products/add"
+                    className="text-gray-600 hover:text-gray-900"
+                  >
                     Add Product
                   </Link>
                 )}
