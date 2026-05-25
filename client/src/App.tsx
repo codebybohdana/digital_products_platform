@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ProductDetail from "./pages/ProductDetail";
 import AddProduct from "./pages/AddProduct";
+import MyPurchases from "./pages/MyPurchases";
 
 function App() {
   return (
@@ -24,6 +25,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AddProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/purchases"
+              element={
+                <ProtectedRoute>
+                  <MyPurchases />
                 </ProtectedRoute>
               }
             />

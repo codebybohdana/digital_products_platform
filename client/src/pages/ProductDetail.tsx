@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import api, { getCoverUrl } from '../api/client';
+import api, { getCoverUrl, triggerDownload } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
 interface Product {
@@ -26,17 +26,34 @@ function formatFileSize(bytes: number | null): string {
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+
   const [product, setProduct] = useState<Product | null>(null);
+  const [owned, setOwned] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [buying, setBuying] = useState(false);
+  const [buyError, setBuyError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchProduct() {
+    async function fetchData() {
       try {
-        const { data } = await api.get(`/products/${id}`);
-        if (!cancelled) setProduct(data.product);
+        const [productRes, ordersRes] = await Promise.all([
+          api.get(`/products/${id}`),
+          user?.role === 'user' ? api.get('/orders/my') : Promise.resolve(null),
+        ]);
+
+        if (cancelled) return;
+        setProduct(productRes.data.product);
+
+        if (ordersRes) {
+          const alreadyOwned = ordersRes.data.orders.some(
+            (o: { product_id: number }) => o.product_id === Number(id)
+          );
+          setOwned(alreadyOwned);
+        }
       } catch (err) {
         if (!cancelled) {
           setError(
@@ -50,9 +67,38 @@ export default function ProductDetail() {
       }
     }
 
-    fetchProduct();
+    fetchData();
     return () => { cancelled = true; };
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleBuy() {
+    setBuying(true);
+    setBuyError(null);
+    try {
+      await api.post('/orders', { productId: Number(id) });
+      setOwned(true);
+    } catch (err) {
+      setBuyError(
+        isAxiosError(err)
+          ? (err.response?.data?.error ?? 'Purchase failed.')
+          : 'Purchase failed.'
+      );
+    } finally {
+      setBuying(false);
+    }
+  }
+
+  async function handleDownload() {
+    if (!product) return;
+    setDownloading(true);
+    try {
+      await triggerDownload(Number(id), product.file_name);
+    } catch {
+      // silent — browser will show nothing if download fails
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   if (loading) {
     return <p className="text-gray-500 text-center py-16">Loading...</p>;
@@ -64,7 +110,49 @@ export default function ProductDetail() {
   }
 
   const price = parseFloat(product.price).toFixed(2);
-  const canBuy = user?.role === 'user';
+  const isOwnProduct = user?.id === product.author_id;
+
+  function renderAction() {
+    if (!user) {
+      return (
+        <p className="text-center text-sm text-gray-500">
+          <Link to="/login" className="underline hover:text-gray-900">Log in</Link>
+          {' '}to purchase this product.
+        </p>
+      );
+    }
+    if (isOwnProduct) {
+      return <p className="text-sm text-gray-400 text-center">Your product</p>;
+    }
+    if (user.role === 'author') {
+      return null;
+    }
+    if (owned) {
+      return (
+        <button
+          onClick={handleDownload}
+          disabled={downloading}
+          className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 disabled:opacity-50 transition-colors"
+        >
+          {downloading ? 'Downloading...' : 'Download'}
+        </button>
+      );
+    }
+    return (
+      <div>
+        {buyError && (
+          <p className="text-red-600 text-sm mb-3 text-center">{buyError}</p>
+        )}
+        <button
+          onClick={handleBuy}
+          disabled={buying}
+          className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 disabled:opacity-50 transition-colors"
+        >
+          {buying ? 'Processing...' : 'Buy Now'}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -102,21 +190,7 @@ export default function ProductDetail() {
             {product.file_size ? ` · ${formatFileSize(product.file_size)}` : ''}
           </p>
 
-          <div className="mt-8">
-            {canBuy && (
-              <button className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-                Buy Now
-              </button>
-            )}
-            {!user && (
-              <p className="text-center text-sm text-gray-500">
-                <a href="/login" className="underline hover:text-gray-900">
-                  Log in
-                </a>{' '}
-                to purchase this product.
-              </p>
-            )}
-          </div>
+          <div className="mt-8">{renderAction()}</div>
         </div>
       </div>
     </div>

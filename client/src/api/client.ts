@@ -32,3 +32,21 @@ export function getCoverUrl(coverPath: string): string {
   const origin = new URL(import.meta.env.VITE_API_URL as string).origin;
   return `${origin}/uploads/covers/${filename}`;
 }
+
+export async function triggerDownload(productId: number, fileName: string): Promise<void> {
+  const token = localStorage.getItem('token');
+  const apiUrl = import.meta.env.VITE_API_URL as string;
+  const res = await fetch(`${apiUrl}/files/download/${productId}`, {
+    headers: { Authorization: `Bearer ${token ?? ''}` },
+  });
+  if (!res.ok) throw new Error('Download failed');
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}

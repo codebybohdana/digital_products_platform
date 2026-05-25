@@ -1,5 +1,5 @@
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 function Profile() {
   const { user, logout } = useAuth();
@@ -34,9 +34,23 @@ function Profile() {
           </div>
         </div>
 
+        <div className="mt-6 pt-6 border-t border-gray-100">
+          {user.role === 'user' && (
+            <Link
+              to="/purchases"
+              className="block text-sm font-medium text-gray-900 hover:underline"
+            >
+              My Purchases →
+            </Link>
+          )}
+          {user.role === 'author' && (
+            <p className="text-sm text-gray-500">My Products — coming soon</p>
+          )}
+        </div>
+
         <button
           onClick={handleLogout}
-          className="mt-8 w-full border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50"
+          className="mt-6 w-full border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50"
         >
           Log out
         </button>
