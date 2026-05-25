@@ -51,17 +51,17 @@ function Register() {
 
   return (
     <div className="max-w-md mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Create account</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8 dark:text-gray-100">Create account</h1>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Name
           </label>
           <input
@@ -70,13 +70,13 @@ function Register() {
             value={form.name}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-gray-400"
             placeholder="Your name"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Email
           </label>
           <input
@@ -85,13 +85,13 @@ function Register() {
             value={form.email}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-gray-400"
             placeholder="you@example.com"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Password
           </label>
           <input
@@ -101,13 +101,13 @@ function Register() {
             onChange={handleChange}
             required
             minLength={8}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-gray-400"
             placeholder="Min 8 characters"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">
             I want to
           </label>
           <div className="space-y-2">
@@ -120,7 +120,7 @@ function Register() {
                 onChange={handleChange}
                 className="w-4 h-4"
               />
-              <span className="text-gray-700">Buy digital products</span>
+              <span className="text-gray-700 dark:text-gray-300">Buy digital products</span>
             </label>
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -131,7 +131,7 @@ function Register() {
                 onChange={handleChange}
                 className="w-4 h-4"
               />
-              <span className="text-gray-700">Sell digital products</span>
+              <span className="text-gray-700 dark:text-gray-300">Sell digital products</span>
             </label>
           </div>
         </div>
@@ -145,9 +145,9 @@ function Register() {
         </button>
       </form>
 
-      <p className="text-center text-gray-600 mt-6">
+      <p className="text-center text-gray-600 mt-6 dark:text-gray-400">
         Already have an account?{" "}
-        <Link to="/login" className="text-gray-900 font-medium hover:underline">
+        <Link to="/login" className="text-gray-900 font-medium hover:underline dark:text-gray-100">
           Log in
         </Link>
       </p>

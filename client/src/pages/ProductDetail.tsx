@@ -115,14 +115,14 @@ export default function ProductDetail() {
   function renderAction() {
     if (!user) {
       return (
-        <p className="text-center text-sm text-gray-500">
-          <Link to="/login" className="underline hover:text-gray-900">Log in</Link>
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+          <Link to="/login" className="underline hover:text-gray-900 dark:hover:text-gray-100">Log in</Link>
           {' '}to purchase this product.
         </p>
       );
     }
     if (isOwnProduct) {
-      return <p className="text-sm text-gray-400 text-center">Your product</p>;
+      return <p className="text-sm text-gray-400 text-center dark:text-gray-500">Your product</p>;
     }
     if (user.role === 'author') {
       return null;
@@ -156,7 +156,7 @@ export default function ProductDetail() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
         {product.cover_path ? (
           <img
             src={getCoverUrl(product.cover_path)}
@@ -164,7 +164,7 @@ export default function ProductDetail() {
             className="w-full h-72 object-cover"
           />
         ) : (
-          <div className="w-full h-72 bg-gray-100 flex items-center justify-center text-gray-400">
+          <div className="w-full h-72 bg-gray-100 flex items-center justify-center text-gray-400 dark:bg-gray-700">
             No cover
           </div>
         )}
@@ -172,17 +172,17 @@ export default function ProductDetail() {
         <div className="p-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <span className="text-xs text-gray-500 uppercase tracking-wide">
+              <span className="text-xs text-gray-500 uppercase tracking-wide dark:text-gray-400">
                 {product.category}
               </span>
-              <h1 className="text-3xl font-bold text-gray-900 mt-1">{product.title}</h1>
-              <p className="text-gray-500 mt-1">by {product.author_name}</p>
+              <h1 className="text-3xl font-bold text-gray-900 mt-1 dark:text-gray-100">{product.title}</h1>
+              <p className="text-gray-500 mt-1 dark:text-gray-400">by {product.author_name}</p>
             </div>
-            <span className="text-3xl font-bold text-gray-900 shrink-0">${price}</span>
+            <span className="text-3xl font-bold text-gray-900 shrink-0 dark:text-gray-100">${price}</span>
           </div>
 
           {product.description && (
-            <p className="text-gray-600 mt-6 leading-relaxed">{product.description}</p>
+            <p className="text-gray-600 mt-6 leading-relaxed dark:text-gray-300">{product.description}</p>
           )}
 
           <p className="mt-6 text-sm text-gray-400">

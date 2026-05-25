@@ -46,17 +46,17 @@ function Login() {
 
   return (
     <div className="max-w-md mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Welcome back</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8 dark:text-gray-100">Welcome back</h1>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Email
           </label>
           <input
@@ -65,13 +65,13 @@ function Login() {
             value={form.email}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-gray-400"
             placeholder="you@example.com"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Password
           </label>
           <input
@@ -80,7 +80,7 @@ function Login() {
             value={form.password}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-gray-400"
             placeholder="Your password"
           />
         </div>
@@ -94,11 +94,11 @@ function Login() {
         </button>
       </form>
 
-      <p className="text-center text-gray-600 mt-6">
+      <p className="text-center text-gray-600 mt-6 dark:text-gray-400">
         Don't have an account?{" "}
         <Link
           to="/register"
-          className="text-gray-900 font-medium hover:underline"
+          className="text-gray-900 font-medium hover:underline dark:text-gray-100"
         >
           Register
         </Link>

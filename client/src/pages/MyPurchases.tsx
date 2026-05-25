@@ -77,7 +77,7 @@ export default function MyPurchases() {
           {orders.map((order) => (
             <div
               key={order.id}
-              className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4"
+              className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 dark:bg-gray-800 dark:border-gray-700"
             >
               {order.cover_path ? (
                 <img
@@ -86,15 +86,15 @@ export default function MyPurchases() {
                   className="w-20 h-20 object-cover rounded-lg shrink-0"
                 />
               ) : (
-                <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs shrink-0">
+                <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs shrink-0 dark:bg-gray-700">
                   No cover
                 </div>
               )}
 
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 truncate">{order.title}</p>
-                <p className="text-sm text-gray-500">{order.author_name} · {order.category}</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="font-semibold text-gray-900 truncate dark:text-gray-100">{order.title}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{order.author_name} · {order.category}</p>
+                <p className="text-sm text-gray-400 mt-1 dark:text-gray-500">
                   ${parseFloat(order.price_paid).toFixed(2)} ·{' '}
                   {new Date(order.purchased_at).toLocaleDateString()}
                 </p>

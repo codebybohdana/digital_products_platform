@@ -103,10 +103,10 @@ export default function MyProducts() {
       )}
 
       {!loading && !error && products.length > 0 && (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden dark:bg-gray-800 dark:border-gray-700">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs text-gray-500 uppercase tracking-wide">
+              <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs text-gray-500 uppercase tracking-wide dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400">
                 <th className="px-4 py-3 font-medium">Title</th>
                 <th className="px-4 py-3 font-medium">Category</th>
                 <th className="px-4 py-3 font-medium">Price</th>
@@ -120,44 +120,44 @@ export default function MyProducts() {
               {products.map((product, i) => (
                 <tr
                   key={product.id}
-                  className={i < products.length - 1 ? 'border-b border-gray-100' : ''}
+                  className={i < products.length - 1 ? 'border-b border-gray-100 dark:border-gray-800' : ''}
                 >
-                  <td className="px-4 py-3 font-medium text-gray-900 max-w-xs truncate">
+                  <td className="px-4 py-3 font-medium text-gray-900 max-w-xs truncate dark:text-gray-100">
                     {product.title}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">{product.category}</td>
-                  <td className="px-4 py-3 text-gray-900">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{product.category}</td>
+                  <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
                     ${parseFloat(product.price).toFixed(2)}
                   </td>
                   <td className="px-4 py-3">
                     {product.is_active ? (
-                      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">
+                      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium dark:bg-green-900/30 dark:text-green-400">
                         Active
                       </span>
                     ) : (
-                      <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full text-xs font-medium">
+                      <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full text-xs font-medium dark:bg-gray-700 dark:text-gray-400">
                         Hidden
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                     {parseInt(product.sales_count)}
                   </td>
-                  <td className="px-4 py-3 text-gray-900">
+                  <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
                     ${parseFloat(product.total_revenue).toFixed(2)}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Link
                         to={`/products/${product.id}/edit`}
-                        className="px-3 py-1 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="px-3 py-1 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => handleToggle(product.id)}
                         disabled={toggling === product.id}
-                        className="px-3 py-1 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                        className="px-3 py-1 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                       >
                         {toggling === product.id
                           ? '...'
@@ -168,7 +168,7 @@ export default function MyProducts() {
                       <button
                         onClick={() => handleDelete(product.id, product.title)}
                         disabled={deleting === product.id}
-                        className="px-3 py-1 text-xs font-medium border border-red-200 rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors"
+                        className="px-3 py-1 text-xs font-medium border border-red-200 rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
                       >
                         {deleting === product.id ? '...' : 'Delete'}
                       </button>
