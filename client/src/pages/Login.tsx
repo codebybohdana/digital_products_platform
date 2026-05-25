@@ -24,7 +24,7 @@ function Login() {
       const response = await api.post("/auth/login", form);
       const { token, user } = response.data;
       login(token, user);
-      navigate("/profile");
+      navigate("/");
     } catch (err: unknown) {
       if (
         err &&
