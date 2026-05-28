@@ -4,7 +4,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Request interceptor — додає токен до кожного запиту
+// Attach token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -13,7 +13,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor — якщо 401, чистить токен
+// Clear token on 401
 api.interceptors.response.use(
   (response) => response,
   (error) => {

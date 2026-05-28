@@ -70,7 +70,7 @@ export default function AddProduct() {
     setSubmitting(true);
     try {
       await api.post('/products', formData);
-      navigate('/profile');
+      navigate('/my-products');
     } catch (err) {
       setError(
         isAxiosError(err)
