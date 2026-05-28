@@ -25,11 +25,8 @@ export default function MyPurchases() {
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState<number | null>(null);
 
-  if (!user || user.role !== 'user') {
-    return <Navigate to="/" replace />;
-  }
-
   useEffect(() => {
+    if (!user || user.role !== 'user') return;
     let cancelled = false;
 
     async function fetchOrders() {
@@ -46,6 +43,10 @@ export default function MyPurchases() {
     fetchOrders();
     return () => { cancelled = true; };
   }, []);
+
+  if (!user || user.role !== 'user') {
+    return <Navigate to="/" replace />;
+  }
 
   async function handleDownload(productId: number, fileName: string) {
     setDownloading(productId);
