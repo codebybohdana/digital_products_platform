@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS products (
   title       VARCHAR(255) NOT NULL,
   description TEXT,
   price       DECIMAL(10,2) NOT NULL CHECK (price > 0),
-  category    VARCHAR(50) NOT NULL CHECK (category IN ('Education','Design','Business','Programming','Other')),
+  category    VARCHAR(50) NOT NULL CHECK (category IN ('Education','Design','Business','Programming','Marketing','Finance','Photography','Music','Writing','Health & Fitness','Personal Development','Templates','Other')),
   file_path   VARCHAR(500) NOT NULL,
   file_name   VARCHAR(255) NOT NULL,
   file_size   INTEGER,
