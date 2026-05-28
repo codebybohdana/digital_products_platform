@@ -36,6 +36,7 @@ export default function ProductDetail() {
   const [buying, setBuying] = useState(false);
   const [buyError, setBuyError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -93,10 +94,11 @@ export default function ProductDetail() {
   async function handleDownload() {
     if (!product) return;
     setDownloading(true);
+    setDownloadError(null);
     try {
       await triggerDownload(Number(id), product.file_name);
     } catch {
-      // silent — browser will show nothing if download fails
+      setDownloadError('Download failed. Please try again.');
     } finally {
       setDownloading(false);
     }
@@ -125,17 +127,22 @@ export default function ProductDetail() {
       return <p className="text-sm text-gray-400 text-center dark:text-gray-500">Your product</p>;
     }
     if (user.role === 'author') {
-      return null;
+      return <p className="text-sm text-gray-400 text-center dark:text-gray-500">Authors cannot purchase products.</p>;
     }
     if (owned) {
       return (
-        <button
-          onClick={handleDownload}
-          disabled={downloading}
-          className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 disabled:opacity-50 transition-colors"
-        >
-          {downloading ? 'Downloading...' : 'Download'}
-        </button>
+        <div>
+          {downloadError && (
+            <p className="text-red-600 text-sm mb-3 text-center dark:text-red-400">{downloadError}</p>
+          )}
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 disabled:opacity-50 transition-colors"
+          >
+            {downloading ? 'Downloading...' : 'Download'}
+          </button>
+        </div>
       );
     }
     return (

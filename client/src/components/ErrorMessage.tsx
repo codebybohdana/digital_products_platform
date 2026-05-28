@@ -5,7 +5,7 @@ interface ErrorMessageProps {
 export default function ErrorMessage({ message }: ErrorMessageProps) {
   return (
     <div className="flex items-center justify-center py-16">
-      <p className="text-red-600">{message}</p>
+      <p className="text-red-600 dark:text-red-400">{message}</p>
     </div>
   );
 }

@@ -124,7 +124,7 @@ export default function MyProducts() {
             <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
               <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Products</p>
               <p className="text-3xl font-black text-gray-900 dark:text-gray-100">{products.length}</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">published</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">total</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
               <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Total Sales</p>

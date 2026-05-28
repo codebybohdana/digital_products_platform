@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { isAxiosError } from "axios";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
 
@@ -30,20 +31,8 @@ function Register() {
       const { token, user } = response.data;
       login(token, user);
       navigate("/");
-    } catch (err: unknown) {
-      if (
-        err &&
-        typeof err === "object" &&
-        "response" in err &&
-        err.response &&
-        typeof err.response === "object" &&
-        "data" in err.response
-      ) {
-        const data = err.response.data as { error?: string };
-        setError(data.error || "Registration failed");
-      } else {
-        setError("Registration failed");
-      }
+    } catch (err) {
+      setError(isAxiosError(err) ? (err.response?.data?.error ?? "Registration failed") : "Registration failed");
     } finally {
       setIsLoading(false);
     }
