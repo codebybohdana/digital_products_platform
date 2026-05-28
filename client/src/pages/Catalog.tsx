@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,12 @@ interface Product {
   author_name: string;
   cover_path: string | null;
 }
+
+const FILTER_CATEGORIES = [
+  'All', 'Education', 'Design', 'Business', 'Programming', 'Marketing',
+  'Finance', 'Photography', 'Music', 'Writing', 'Health & Fitness',
+  'Personal Development', 'Templates', 'Other',
+];
 
 const FEATURES = [
   {
@@ -60,32 +66,36 @@ export default function Catalog() {
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedSort, setSelectedSort] = useState('Newest');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const pillsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-    const delay = search ? 400 : 0;
+    setLoading(true);
+    api.get('/products')
+      .then(({ data }) => { if (!cancelled) setProducts(data.products); })
+      .catch(() => { if (!cancelled) setError('Failed to load products.'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
 
-    const timer = setTimeout(async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const params = search ? { search } : {};
-        const { data } = await api.get('/products', { params });
-        if (!cancelled) setProducts(data.products);
-      } catch {
-        if (!cancelled) setError('Failed to load products.');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }, delay);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [search]);
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+    if (selectedCategory !== 'All')
+      result = result.filter(p => p.category === selectedCategory);
+    if (search)
+      result = result.filter(p => p.title.toLowerCase().includes(search.toLowerCase()));
+    switch (selectedSort) {
+      case 'Oldest':             result.sort((a, b) => a.id - b.id); break;
+      case 'Price: Low to High': result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price)); break;
+      case 'Price: High to Low': result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price)); break;
+      default:                   result.sort((a, b) => b.id - a.id);
+    }
+    return result;
+  }, [products, selectedCategory, search, selectedSort]);
 
   const secondaryBtnClass =
     'border-2 border-gray-900 text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-800';
@@ -141,25 +151,77 @@ export default function Catalog() {
 
       {/* Products */}
       <div id="products">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Products</h2>
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
-          />
+        <h2 className="text-2xl font-bold text-gray-900 mb-4 dark:text-gray-100">Products</h2>
+
+        {/* Toolbar */}
+        <div className="mb-2">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <button
+                onClick={() => pillsRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
+                className="shrink-0 p-1.5 rounded-full border border-gray-300 text-gray-500 hover:border-gray-900 hover:text-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300 dark:hover:text-gray-100"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              </button>
+
+              <div ref={pillsRef} className="flex items-center gap-2 overflow-x-auto scrollbar-hide scroll-smooth flex-1">
+                {FILTER_CATEGORIES.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`shrink-0 rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-colors ${
+                      selectedCategory === cat
+                        ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                        : 'border border-gray-300 text-gray-600 hover:border-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => pillsRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
+                className="shrink-0 p-1.5 rounded-full border border-gray-300 text-gray-500 hover:border-gray-900 hover:text-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300 dark:hover:text-gray-100"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            </div>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-1.5 w-48 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+            />
+            <select
+              value={selectedSort}
+              onChange={(e) => setSelectedSort(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+            >
+              <option>Newest</option>
+              <option>Oldest</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+            </select>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
+            {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+          </p>
         </div>
 
         {loading && <Spinner />}
         {error && <ErrorMessage message={error} />}
-        {!loading && !error && products.length === 0 && (
-          <p className="text-gray-500 text-center py-16">No products found.</p>
+        {!loading && !error && filteredProducts.length === 0 && (
+          <p className="text-gray-500 text-center py-16 dark:text-gray-400">No products found.</p>
         )}
-        {!loading && !error && products.length > 0 && (
+        {!loading && !error && filteredProducts.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
