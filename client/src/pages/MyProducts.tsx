@@ -81,7 +81,7 @@ export default function MyProducts() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">My Products</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Products</h1>
         <Link
           to="/products/add"
           className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
@@ -95,8 +95,8 @@ export default function MyProducts() {
 
       {!loading && !error && products.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-gray-500 mb-4">No products yet.</p>
-          <Link to="/products/add" className="text-gray-900 underline hover:text-gray-600">
+          <p className="text-gray-500 mb-4 dark:text-gray-400">No products yet.</p>
+          <Link to="/products/add" className="text-gray-900 underline hover:text-gray-600 dark:text-gray-100 dark:hover:text-gray-400">
             Add your first product
           </Link>
         </div>

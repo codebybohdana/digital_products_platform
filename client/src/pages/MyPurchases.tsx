@@ -60,14 +60,14 @@ export default function MyPurchases() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">My Purchases</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-8 dark:text-gray-100">My Purchases</h1>
 
       {loading && <Spinner />}
       {error && <ErrorMessage message={error} />}
       {!loading && !error && orders.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-gray-500 mb-4">No purchases yet.</p>
-          <Link to="/" className="text-gray-900 underline hover:text-gray-600">
+          <p className="text-gray-500 mb-4 dark:text-gray-400">No purchases yet.</p>
+          <Link to="/" className="text-gray-900 underline hover:text-gray-600 dark:text-gray-100 dark:hover:text-gray-400">
             Browse products
           </Link>
         </div>

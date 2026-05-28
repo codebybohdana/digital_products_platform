@@ -170,10 +170,14 @@ function Navbar() {
 
             <button
               onClick={toggleTheme}
-              className="text-xl"
-              aria-label="Toggle theme"
+              className="relative inline-flex items-center w-9 h-5 rounded-full transition-colors duration-300 focus:outline-none"
+              style={{ backgroundColor: theme === 'dark' ? '#374151' : '#D1D5DB' }}
+              aria-label="Toggle dark mode"
             >
-              {theme === "light" ? "🌙" : "☀️"}
+              <span
+                className="inline-block w-4 h-4 bg-white rounded-full shadow transition-transform duration-300"
+                style={{ transform: theme === 'dark' ? 'translateX(18px)' : 'translateX(2px)' }}
+              />
             </button>
           </div>
         </div>
