@@ -219,6 +219,12 @@ export default function MyProducts() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <Link
+                          to={`/products/${product.id}`}
+                          className="px-3 py-1 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:border-gray-900 hover:text-gray-900 transition-colors dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300 dark:hover:text-gray-100"
+                        >
+                          View
+                        </Link>
+                        <Link
                           to={`/products/${product.id}/edit`}
                           className="px-3 py-1 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                         >
