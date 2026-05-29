@@ -31,13 +31,14 @@ async function downloadFile(req, res, next) {
     }
 
     const { file_path, file_name } = products[0];
+    const absolutePath = path.join(__dirname, '../..', file_path);
 
     // Check file exists on disk
-    if (!fs.existsSync(file_path)) {
+    if (!fs.existsSync(absolutePath)) {
       return res.status(404).json({ error: "File not found on server" });
     }
 
-    return res.download(file_path, file_name);
+    return res.download(absolutePath, file_name);
   } catch (err) {
     next(err);
   }

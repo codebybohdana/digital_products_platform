@@ -24,6 +24,16 @@ router.get('/', async (req, res, next) => {
 router.post('/:productId', async (req, res, next) => {
   try {
     const { productId } = req.params;
+
+    const { rows: products } = await db.query(
+      'SELECT id FROM products WHERE id = $1 AND is_active = true',
+      [productId]
+    );
+
+    if (products.length === 0) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
     await db.query(
       'INSERT INTO wishlists (user_id, product_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
       [req.user.id, productId]

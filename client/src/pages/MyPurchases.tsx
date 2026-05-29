@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { getCoverUrl, triggerDownload } from '../api/client';
-import api from '../api/client';
+import api, { getCoverUrl, triggerDownload } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
