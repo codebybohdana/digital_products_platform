@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/client";
 import { useAuth } from "../context/AuthContext";
@@ -118,11 +118,21 @@ export default function Catalog() {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedSort, setSelectedSort] = useState("Newest");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "price_high" | "price_low">("newest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cols, setCols] = useState(4);
-  const pillsRef = useRef<HTMLDivElement>(null);
+  const [purchasedIds, setPurchasedIds] = useState<number[]>([]);
+  const [hidePurchased, setHidePurchased] = useState(false);
+
+  useEffect(() => {
+    if (!user || user.role !== 'user') return;
+    api.get('/orders/my')
+      .then(({ data }) => {
+        setPurchasedIds(data.orders.map((o: { product_id: number }) => o.product_id));
+      })
+      .catch(() => {});
+  }, [user]);
 
   useEffect(() => {
     let cancelled = false;
@@ -143,28 +153,23 @@ export default function Catalog() {
   }, []);
 
   const filteredProducts = useMemo(() => {
-    let result = [...products];
-    if (selectedCategory !== "All")
-      result = result.filter((p) => p.category === selectedCategory);
-    if (search)
-      result = result.filter((p) =>
-        p.title.toLowerCase().includes(search.toLowerCase())
-      );
-    switch (selectedSort) {
-      case "Oldest":
-        result.sort((a, b) => a.id - b.id);
-        break;
-      case "Price: Low to High":
-        result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-        break;
-      case "Price: High to Low":
-        result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-        break;
-      default:
-        result.sort((a, b) => b.id - a.id);
+    const result = products
+      .filter(p =>
+        selectedCategory === 'All' ? true :
+        selectedCategory === 'Purchased' ? purchasedIds.includes(p.id) :
+        p.category === selectedCategory
+      )
+      .filter(p => hidePurchased ? !purchasedIds.includes(p.id) : true)
+      .filter(p => p.title.toLowerCase().includes(search.toLowerCase()));
+
+    switch (sortBy) {
+      case "oldest":      result.sort((a, b) => a.id - b.id); break;
+      case "price_low":   result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price)); break;
+      case "price_high":  result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price)); break;
+      default:            result.sort((a, b) => b.id - a.id);
     }
     return result;
-  }, [products, selectedCategory, search, selectedSort]);
+  }, [products, selectedCategory, search, sortBy, purchasedIds, hidePurchased]);
 
   const gridClass = {
     3: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6",
@@ -252,102 +257,76 @@ export default function Catalog() {
 
         {/* Toolbar */}
         <div className="mb-2">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 flex-1 min-w-0">
+          {/* Row 1 — category pills */}
+          <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide">
+            {FILTER_CATEGORIES.map((cat) => (
               <button
-                onClick={() =>
-                  pillsRef.current?.scrollBy({ left: -200, behavior: "smooth" })
-                }
-                className="shrink-0 p-1.5 rounded-full border border-gray-300 text-gray-500 hover:border-gray-900 hover:text-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300 dark:hover:text-gray-100"
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`shrink-0 rounded-full px-5 py-2 text-sm whitespace-nowrap transition-colors ${
+                  selectedCategory === cat
+                    ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                    : "border border-gray-300 text-gray-600 hover:border-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300"
+                }`}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  viewBox="0 0 24 24"
-                >
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
+                {cat}
               </button>
+            ))}
+          </div>
 
-              <div
-                ref={pillsRef}
-                className="flex items-center gap-2 overflow-x-auto scrollbar-hide scroll-smooth flex-1"
-              >
-                {FILTER_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`shrink-0 rounded-full px-4 py-1.5 text-sm whitespace-nowrap transition-colors ${
-                      selectedCategory === cat
-                        ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                        : "border border-gray-300 text-gray-600 hover:border-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                onClick={() =>
-                  pillsRef.current?.scrollBy({ left: 200, behavior: "smooth" })
-                }
-                className="shrink-0 p-1.5 rounded-full border border-gray-300 text-gray-500 hover:border-gray-900 hover:text-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300 dark:hover:text-gray-100"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  viewBox="0 0 24 24"
-                >
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            </div>
+          {/* Row 2 — search + controls */}
+          <div className="flex items-center justify-between mt-3">
             <input
               type="text"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-1.5 w-48 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
+              className="border border-gray-300 rounded-lg px-4 py-2 w-64 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
             />
-            <select
-              value={selectedSort}
-              onChange={(e) => setSelectedSort(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-            >
-              <option>Newest</option>
-              <option>Oldest</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-            </select>
-            <div className="flex items-center gap-1">
-              {[3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setCols(n)}
-                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                    cols === n
-                      ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                      : "border border-gray-300 text-gray-500 hover:border-gray-900 hover:text-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300 dark:hover:text-gray-100"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
+            <div className="flex items-center gap-4">
+              {user?.role === 'user' && (
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      checked={hidePurchased}
+                      onChange={e => setHidePurchased(e.target.checked)}
+                    />
+                    <div className={`w-9 h-5 rounded-full transition-colors ${hidePurchased ? 'bg-gray-900 dark:bg-white' : 'bg-gray-200 dark:bg-gray-600'}`} />
+                    <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white dark:bg-gray-900 rounded-full shadow transition-transform ${hidePurchased ? 'translate-x-4' : ''}`} />
+                  </div>
+                  Hide purchased
+                </label>
+              )}
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value as "newest" | "oldest" | "price_high" | "price_low")}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+              >
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="price_high">Price: High to Low</option>
+                <option value="price_low">Price: Low to High</option>
+              </select>
+              <div className="flex items-center gap-1">
+                {[3, 4, 5].map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setCols(n)}
+                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                      cols === n
+                        ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                        : "border border-gray-300 text-gray-500 hover:border-gray-900 dark:border-gray-600 dark:text-gray-400"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
+
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
             {filteredProducts.length} product
             {filteredProducts.length !== 1 ? "s" : ""}
@@ -358,7 +337,9 @@ export default function Catalog() {
         {error && <ErrorMessage message={error} />}
         {!loading && !error && filteredProducts.length === 0 && (
           <p className="text-gray-500 text-center py-16 dark:text-gray-400">
-            No products found.
+            {selectedCategory === 'Purchased'
+              ? "You haven't purchased any products yet."
+              : "No products found."}
           </p>
         )}
         {!loading && !error && filteredProducts.length > 0 && (
