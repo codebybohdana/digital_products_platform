@@ -10,6 +10,7 @@ import AddProduct from "./pages/AddProduct";
 import MyPurchases from "./pages/MyPurchases";
 import MyProducts from "./pages/MyProducts";
 import EditProduct from "./pages/EditProduct";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>
