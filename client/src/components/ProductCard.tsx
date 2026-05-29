@@ -8,6 +8,7 @@ interface Product {
   title: string;
   price: string;
   category: string;
+  author_id: number;
   author_name: string;
   cover_path: string | null;
 }
@@ -61,7 +62,13 @@ export default function ProductCard({ product }: ProductCardProps) {
           </p>
           <h3 className="font-semibold text-gray-900 truncate dark:text-gray-100">{product.title}</h3>
           <div className="flex items-center justify-between mt-2">
-            <span className="text-sm text-gray-500 dark:text-gray-400">{product.author_name}</span>
+            <Link
+              to={`/authors/${product.author_id}`}
+              onClick={e => e.stopPropagation()}
+              className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors"
+            >
+              {product.author_name}
+            </Link>
             <span className="font-bold text-gray-900 dark:text-gray-100">${price}</span>
           </div>
         </div>

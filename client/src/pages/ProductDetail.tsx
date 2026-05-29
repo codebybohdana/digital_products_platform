@@ -239,7 +239,9 @@ export default function ProductDetail() {
           <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-2">
             {product.title}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">by {product.author_name}</p>
+          <Link to={`/authors/${product.author_id}`} className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors mb-6 block">
+            by {product.author_name}
+          </Link>
           <p className="text-4xl font-black text-gray-900 dark:text-gray-100 mb-6">
             ${parseFloat(product.price).toFixed(2)}
           </p>

@@ -19,7 +19,7 @@ async function getProducts(req, res, next) {
     const { search } = req.query;
     let query = `
       SELECT p.id, p.title, p.description, p.price, p.category,
-             p.cover_path, p.created_at,
+             p.cover_path, p.created_at, p.author_id,
              u.name as author_name
       FROM products p
       JOIN users u ON p.author_id = u.id

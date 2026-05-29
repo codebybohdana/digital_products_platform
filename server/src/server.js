@@ -31,6 +31,9 @@ app.use("/api/wishlist", requireAuth, wishlistRouter);
 const cartRouter = require("./routes/cart");
 app.use("/api/cart", requireAuth, cartRouter);
 
+const authorsRouter = require("./routes/authors");
+app.use("/api/authors", authorsRouter);
+
 // Serve cover images statically
 const path = require("path");
 app.use(

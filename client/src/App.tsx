@@ -13,6 +13,7 @@ import EditProduct from "./pages/EditProduct";
 import Wishlist from "./pages/Wishlist";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
+import AuthorProfile from "./pages/AuthorProfile";
 
 function App() {
   return (
@@ -81,6 +82,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/authors/:id" element={<AuthorProfile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
