@@ -70,6 +70,7 @@ export default function Catalog() {
   const [selectedSort, setSelectedSort] = useState('Newest');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cols, setCols] = useState(4);
   const pillsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,6 +97,12 @@ export default function Catalog() {
     }
     return result;
   }, [products, selectedCategory, search, selectedSort]);
+
+  const gridClass = {
+    3: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6',
+    4: 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5',
+    5: 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4',
+  }[cols];
 
   const secondaryBtnClass =
     'border-2 border-gray-900 text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors dark:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-800';
@@ -208,6 +215,21 @@ export default function Catalog() {
               <option>Price: Low to High</option>
               <option>Price: High to Low</option>
             </select>
+            <div className="flex items-center gap-1">
+              {[3, 4, 5].map(n => (
+                <button
+                  key={n}
+                  onClick={() => setCols(n)}
+                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                    cols === n
+                      ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                      : 'border border-gray-300 text-gray-500 hover:border-gray-900 hover:text-gray-900 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-300 dark:hover:text-gray-100'
+                  }`}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
             {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
@@ -220,7 +242,7 @@ export default function Catalog() {
           <p className="text-gray-500 text-center py-16 dark:text-gray-400">No products found.</p>
         )}
         {!loading && !error && filteredProducts.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className={gridClass}>
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
