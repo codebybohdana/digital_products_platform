@@ -21,9 +21,12 @@ app.use("/api/products", productsRouter);
 
 const ordersRouter = require("./routes/orders");
 const filesRouter = require("./routes/files");
+const wishlistRouter = require("./routes/wishlist");
+const { requireAuth } = require("./middleware/auth");
 
 app.use("/api/orders", ordersRouter);
 app.use("/api/files", filesRouter);
+app.use("/api/wishlist", requireAuth, wishlistRouter);
 
 // Serve cover images statically
 const path = require("path");

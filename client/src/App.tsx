@@ -10,6 +10,7 @@ import AddProduct from "./pages/AddProduct";
 import MyPurchases from "./pages/MyPurchases";
 import MyProducts from "./pages/MyProducts";
 import EditProduct from "./pages/EditProduct";
+import Wishlist from "./pages/Wishlist";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -60,6 +61,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <ProtectedRoute>
+                  <Wishlist />
                 </ProtectedRoute>
               }
             />

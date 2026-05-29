@@ -1,0 +1,50 @@
+const express = require('express');
+const db = require('../db/pool');
+
+const router = express.Router();
+
+router.get('/', async (req, res, next) => {
+  try {
+    const { rows } = await db.query(
+      `SELECT p.id, p.title, p.price, p.category, p.cover_path,
+              u.name AS author_name
+       FROM wishlists w
+       JOIN products p ON w.product_id = p.id
+       JOIN users u ON p.author_id = u.id
+       WHERE w.user_id = $1 AND p.is_active = true
+       ORDER BY w.created_at DESC`,
+      [req.user.id]
+    );
+    return res.json({ products: rows });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/:productId', async (req, res, next) => {
+  try {
+    const { productId } = req.params;
+    await db.query(
+      'INSERT INTO wishlists (user_id, product_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+      [req.user.id, productId]
+    );
+    return res.status(201).json({ message: 'Added to wishlist' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/:productId', async (req, res, next) => {
+  try {
+    const { productId } = req.params;
+    await db.query(
+      'DELETE FROM wishlists WHERE user_id = $1 AND product_id = $2',
+      [req.user.id, productId]
+    );
+    return res.json({ message: 'Removed from wishlist' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = router;
