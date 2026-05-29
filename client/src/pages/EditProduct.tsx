@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import api from '../api/client';
+import api, { getCoverUrl } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -21,6 +21,8 @@ export default function EditProduct() {
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
+  const [coverPath, setCoverPath] = useState<string | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [permissionDenied, setPermissionDenied] = useState(false);
@@ -50,6 +52,7 @@ export default function EditProduct() {
         setDescription(p.description ?? '');
         setPrice(String(p.price));
         setCategory(p.category);
+        setCoverPath(p.cover_path ?? null);
       } catch (err) {
         if (!cancelled) {
           setLoadError(
@@ -92,12 +95,13 @@ export default function EditProduct() {
     setSubmitError(null);
     setSubmitting(true);
     try {
-      await api.put(`/products/${id}`, {
-        title,
-        description,
-        price: parseFloat(price),
-        category,
-      });
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('price', String(parseFloat(price)));
+      formData.append('category', category);
+      if (coverFile) formData.append('cover', coverFile);
+      await api.put(`/products/${id}`, formData);
       navigate('/my-products');
     } catch (err) {
       setSubmitError(
@@ -125,12 +129,42 @@ export default function EditProduct() {
   );
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-8 dark:text-gray-100">Edit Product</h1>
+
+      <div className="flex items-start gap-6">
+        {/* Cover preview + file input */}
+        <div className="shrink-0 w-52">
+          {coverPath ? (
+            <img
+              src={getCoverUrl(coverPath)}
+              alt={title}
+              className="w-48 h-48 object-cover rounded-xl border border-gray-200 dark:border-gray-700"
+            />
+          ) : (
+            <div className="w-48 h-48 bg-gray-100 rounded-xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex items-center justify-center text-gray-400 text-sm">
+              No cover
+            </div>
+          )}
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center truncate w-48">{title}</p>
+
+          <div className="mt-4">
+            <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">
+              Change Cover Image
+              <span className="font-normal text-gray-400"> (JPG, PNG — optional)</span>
+            </label>
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png"
+              onChange={e => setCoverFile(e.target.files?.[0] ?? null)}
+              className="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-gray-100 file:text-gray-700 file:cursor-pointer dark:text-gray-400 dark:file:bg-gray-700 dark:file:text-gray-300"
+            />
+          </div>
+        </div>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-gray-200 rounded-xl p-8 space-y-6 dark:bg-gray-800 dark:border-gray-700"
+        className="flex-1 bg-white border border-gray-200 rounded-xl p-8 space-y-6 dark:bg-gray-800 dark:border-gray-700"
       >
         {submitError && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
@@ -246,6 +280,7 @@ export default function EditProduct() {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import MyPurchases from "./pages/MyPurchases";
 import MyProducts from "./pages/MyProducts";
 import EditProduct from "./pages/EditProduct";
 import Wishlist from "./pages/Wishlist";
+import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 
 function App() {
@@ -61,6 +62,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <Cart />
                 </ProtectedRoute>
               }
             />

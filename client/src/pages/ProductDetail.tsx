@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import api, { getCoverUrl, triggerDownload } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -28,6 +29,7 @@ function formatFileSize(bytes: number | null): string {
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const { isInCart, addToCart, removeFromCart } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [owned, setOwned] = useState(false);
@@ -145,6 +147,7 @@ export default function ProductDetail() {
         </div>
       );
     }
+    const inCart = product ? isInCart(product.id) : false;
     return (
       <div>
         {buyError && (
@@ -156,6 +159,12 @@ export default function ProductDetail() {
           className="w-full bg-gray-900 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 disabled:opacity-50 transition-colors"
         >
           {buying ? 'Processing...' : 'Buy Now'}
+        </button>
+        <button
+          onClick={() => product && (inCart ? removeFromCart(product.id) : addToCart(product.id))}
+          className="w-full mt-3 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          {inCart ? 'Remove from Cart' : 'Add to Cart'}
         </button>
       </div>
     );

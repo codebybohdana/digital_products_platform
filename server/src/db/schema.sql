@@ -40,6 +40,14 @@ CREATE TABLE IF NOT EXISTS wishlists (
   UNIQUE(user_id, product_id)
 );
 
+CREATE TABLE IF NOT EXISTS cart_items (
+  id         SERIAL PRIMARY KEY,
+  user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  added_at   TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, product_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_products_author   ON products(author_id);
 CREATE INDEX IF NOT EXISTS idx_products_active   ON products(is_active);
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);

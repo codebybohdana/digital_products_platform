@@ -28,6 +28,9 @@ app.use("/api/orders", ordersRouter);
 app.use("/api/files", filesRouter);
 app.use("/api/wishlist", requireAuth, wishlistRouter);
 
+const cartRouter = require("./routes/cart");
+app.use("/api/cart", requireAuth, cartRouter);
+
 // Serve cover images statically
 const path = require("path");
 app.use(
