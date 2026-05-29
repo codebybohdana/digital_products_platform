@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import api, { getCoverUrl, triggerDownload } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import ProductCard from '../components/ProductCard';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -24,6 +26,8 @@ export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { isInCart, addToCart, removeFromCart } = useCart();
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [owned, setOwned] = useState(false);
@@ -33,6 +37,7 @@ export default function ProductDetail() {
   const [buyError, setBuyError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [related, setRelated] = useState<Product[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -69,6 +74,18 @@ export default function ProductDetail() {
     fetchData();
     return () => { cancelled = true; };
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!product) return;
+    api.get('/products')
+      .then(res => {
+        const filtered = res.data.products
+          .filter((p: Product) => p.id !== product.id && p.category === product.category)
+          .slice(0, 4);
+        setRelated(filtered);
+      })
+      .catch(() => {});
+  }, [product]);
 
   async function handleBuy() {
     setBuying(true);
@@ -110,6 +127,7 @@ export default function ProductDetail() {
   const isOwnProduct = user?.id === product.author_id;
 
   function renderAction() {
+    if (!product) return null;
     if (!user) {
       return (
         <p className="text-center text-sm text-gray-500 dark:text-gray-400">
@@ -153,18 +171,42 @@ export default function ProductDetail() {
         >
           {buying ? 'Processing...' : 'Buy Now'}
         </button>
-        <button
-          onClick={() => product && (inCart ? removeFromCart(product.id) : addToCart(product.id))}
-          className="w-full mt-3 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
-          {inCart ? 'Remove from Cart' : 'Add to Cart'}
-        </button>
+        <div className="flex gap-3 mt-3">
+          <button
+            onClick={() => product && (inCart ? removeFromCart(product.id) : addToCart(product.id))}
+            className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            {inCart ? 'Remove from Cart' : 'Add to Cart'}
+          </button>
+          <button
+            onClick={() => toggleWishlist(product.id)}
+            className={`w-12 h-12 flex items-center justify-center rounded-xl border-2 transition-colors ${
+              isWishlisted(product.id)
+                ? 'border-red-400 text-red-400 bg-red-50 dark:bg-red-900/20'
+                : 'border-gray-300 text-gray-400 hover:border-red-400 hover:text-red-400 dark:border-gray-600'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill={isWishlisted(product.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="max-w-5xl mx-auto">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-8 transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back
+      </button>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
         {/* LEFT — Cover Image */}
@@ -222,6 +264,15 @@ export default function ProductDetail() {
         </div>
 
       </div>
+
+      {related.length > 0 && (
+        <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">You might also like</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {related.slice(0, 4).map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
