@@ -57,6 +57,10 @@ export default function AddProduct() {
       setError('Product file is required.');
       return;
     }
+    if (file.size > 50 * 1024 * 1024) {
+      setError('File size must be under 50 MB.');
+      return;
+    }
 
     const formData = new FormData();
     formData.append('title', title);
