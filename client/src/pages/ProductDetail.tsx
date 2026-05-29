@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import api, { getCoverUrl, triggerDownload } from '../api/client';
+import Toast from '../components/Toast';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -34,6 +35,7 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [buying, setBuying] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [buyError, setBuyError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
@@ -93,6 +95,7 @@ export default function ProductDetail() {
     try {
       await api.post('/orders', { productId: Number(id) });
       setOwned(true);
+      setShowToast(true);
     } catch (err) {
       setBuyError(
         isAxiosError(err)
@@ -272,6 +275,15 @@ export default function ProductDetail() {
             {related.slice(0, 4).map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         </div>
+      )}
+
+      {showToast && (
+        <Toast
+          message="Purchase successful!"
+          linkText="View your purchases"
+          linkTo="/purchases"
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import Toast from '../components/Toast';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { getCoverUrl } from '../api/client';
@@ -9,8 +10,8 @@ import Spinner from '../components/Spinner';
 export default function Cart() {
   const { user } = useAuth();
   const { cartItems, loading, cartCount, cartTotal, removeFromCart, clearCart } = useCart();
-  const navigate = useNavigate();
   const [purchasing, setPurchasing] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   if (!user || user.role !== 'user') {
     return <Navigate to="/" replace />;
@@ -28,7 +29,7 @@ export default function Cart() {
         }
       }
       await clearCart();
-      navigate('/purchases');
+      setShowToast(true);
     } finally {
       setPurchasing(false);
     }
@@ -125,6 +126,15 @@ export default function Cart() {
             </div>
           </div>
         </div>
+      )}
+
+      {showToast && (
+        <Toast
+          message="All purchases successful!"
+          linkText="View your purchases"
+          linkTo="/purchases"
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );
