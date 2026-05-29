@@ -20,12 +20,6 @@ interface Product {
   file_size: number | null;
 }
 
-function formatFileSize(bytes: number | null): string {
-  if (!bytes) return '';
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -113,7 +107,6 @@ export default function ProductDetail() {
     return <ErrorMessage message={error ?? 'Product not found.'} />;
   }
 
-  const price = parseFloat(product.price).toFixed(2);
   const isOwnProduct = user?.id === product.author_id;
 
   function renderAction() {
@@ -171,43 +164,63 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-        {product.cover_path ? (
-          <img
-            src={getCoverUrl(product.cover_path)}
-            alt={product.title}
-            className="w-full h-72 object-cover"
-          />
-        ) : (
-          <div className="w-full h-72 bg-gray-100 flex items-center justify-center text-gray-400 dark:bg-gray-700">
-            No cover
-          </div>
-        )}
+    <div className="max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-        <div className="p-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <span className="text-xs text-gray-500 uppercase tracking-wide dark:text-gray-400">
-                {product.category}
-              </span>
-              <h1 className="text-3xl font-bold text-gray-900 mt-1 dark:text-gray-100">{product.title}</h1>
-              <p className="text-gray-500 mt-1 dark:text-gray-400">by {product.author_name}</p>
+        {/* LEFT — Cover Image */}
+        <div>
+          {product.cover_path ? (
+            <img
+              src={getCoverUrl(product.cover_path)}
+              alt={product.title}
+              className="w-full aspect-square object-cover rounded-2xl"
+            />
+          ) : (
+            <div className="w-full aspect-square bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" className="text-gray-300 dark:text-gray-600">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
             </div>
-            <span className="text-3xl font-bold text-gray-900 shrink-0 dark:text-gray-100">${price}</span>
-          </div>
-
-          {product.description && (
-            <p className="text-gray-600 mt-6 leading-relaxed dark:text-gray-300">{product.description}</p>
           )}
-
-          <p className="mt-6 text-sm text-gray-400">
-            {product.file_name}
-            {product.file_size ? ` · ${formatFileSize(product.file_size)}` : ''}
-          </p>
-
-          <div className="mt-8">{renderAction()}</div>
         </div>
+
+        {/* RIGHT — Product Info */}
+        <div className="flex flex-col">
+          <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">
+            {product.category}
+          </span>
+          <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-2">
+            {product.title}
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">by {product.author_name}</p>
+          <p className="text-4xl font-black text-gray-900 dark:text-gray-100 mb-6">
+            ${parseFloat(product.price).toFixed(2)}
+          </p>
+          {product.description && (
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+              {product.description}
+            </p>
+          )}
+          <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span>{product.file_name}</span>
+            {product.file_size && (
+              <span>· {product.file_size < 1024 * 1024
+                ? `${(product.file_size / 1024).toFixed(1)} KB`
+                : `${(product.file_size / (1024 * 1024)).toFixed(1)} MB`}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col gap-3 mt-auto">
+            {renderAction()}
+          </div>
+        </div>
+
       </div>
     </div>
   );
