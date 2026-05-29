@@ -7,7 +7,11 @@ const productSchema = z.object({
   title: z.string().min(1).max(255),
   description: z.string().optional(),
   price: z.coerce.number().positive(),
-  category: z.enum(["Education", "Design", "Business", "Programming", "Other"]),
+  category: z.enum([
+    "Education", "Design", "Business", "Programming", "Marketing",
+    "Finance", "Photography", "Music", "Writing", "Health & Fitness",
+    "Personal Development", "Templates", "Other",
+  ]),
 });
 
 async function getProducts(req, res, next) {
@@ -87,7 +91,7 @@ async function createProduct(req, res, next) {
     if (!result.success) {
       return res.status(400).json({
         error: "Validation failed",
-        details: result.error.errors.map((e) => ({
+        details: (result.error?.errors ?? []).map((e) => ({
           field: e.path[0],
           message: e.message,
         })),
