@@ -80,6 +80,26 @@ function Profile() {
         Log out
       </button>
 
+      {user.role === 'user' && (
+        <div className="mt-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 text-center">
+          <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Want to sell your products?</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Create a separate author account to start selling digital products on Folio.</p>
+          <Link to="/register" className="inline-block text-xs font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 rounded-lg hover:opacity-80 transition-opacity">
+            Create author account →
+          </Link>
+        </div>
+      )}
+
+      {user.role === 'author' && (
+        <div className="mt-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 text-center">
+          <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Want to purchase products?</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Create a separate buyer account to browse and purchase digital products from other creators.</p>
+          <Link to="/register" className="inline-block text-xs font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 rounded-lg hover:opacity-80 transition-opacity">
+            Create buyer account →
+          </Link>
+        </div>
+      )}
+
     </div>
   );
 }

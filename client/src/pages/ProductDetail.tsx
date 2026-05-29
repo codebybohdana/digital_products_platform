@@ -143,7 +143,13 @@ export default function ProductDetail() {
       return <p className="text-sm text-gray-400 text-center dark:text-gray-500">Your product</p>;
     }
     if (user.role === 'author') {
-      return <p className="text-sm text-gray-400 text-center dark:text-gray-500">Authors cannot purchase products.</p>;
+      return (
+        <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-center">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Authors cannot purchase products</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">To buy products, register a separate buyer account.</p>
+          <Link to="/register" className="inline-block mt-3 text-xs font-medium text-gray-900 dark:text-gray-100 underline">Create buyer account →</Link>
+        </div>
+      );
     }
     if (owned) {
       return (
