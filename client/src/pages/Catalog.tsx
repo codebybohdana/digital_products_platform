@@ -388,22 +388,58 @@ export default function Catalog() {
       </div>
 
       {/* About */}
-      <section id="about" className="mt-24 mb-16 max-w-2xl mx-auto text-center">
-        <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">
-          About Folio
-        </p>
-        <h2 className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-6">
-          Built for independent creators
-        </h2>
-        <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed mb-4">
-          Folio is a marketplace where creators sell digital products directly
-          to their audience - templates, guides, courses, and files - without
-          middlemen.
-        </p>
-        <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed">
-          Every purchase gives instant access. Every sale goes directly to the
-          creator. Simple, fair, and built on trust.
-        </p>
+      <section id="about" className="mt-24 mb-16">
+        {/* Top divider with label */}
+        <div className="flex items-center gap-4 mb-16">
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+          <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-widest shrink-0">
+            About Folio
+          </span>
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+        </div>
+
+        {/* Two column layout */}
+        <div className="grid grid-cols-2 gap-16 items-center mb-16">
+          {/* Left - main text */}
+          <div>
+            <h2 className="text-4xl font-black text-gray-900 dark:text-gray-100 leading-tight mb-6">
+              Built for independent
+              <br />
+              creators
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 text-lg leading-relaxed mb-4">
+              Folio is a marketplace where creators sell digital products
+              directly to their audience - templates, guides, courses, and files
+              - without middlemen.
+            </p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
+              Every purchase gives instant access. Every sale goes directly to
+              the creator. Simple, fair, and built on trust.
+            </p>
+          </div>
+
+          {/* Right - stats grid */}
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { number: "10+", label: "Categories" },
+              { number: "100%", label: "Instant access" },
+              { number: "$0", label: "Hidden fees" },
+              { number: "∞", label: "Downloads" },
+            ].map(({ number, label }) => (
+              <div
+                key={label}
+                className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center"
+              >
+                <p className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-1">
+                  {number}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );
