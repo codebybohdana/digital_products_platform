@@ -2,6 +2,7 @@ const { z } = require("zod");
 const db = require("../db/pool");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const supabase = require("../lib/supabase");
 
 const productSchema = z.object({
   title: z.string().min(1).max(255),
@@ -106,6 +107,27 @@ async function createProduct(req, res, next) {
     const file = req.files.file[0];
     const cover = req.files?.cover?.[0];
 
+    // Upload product file to Supabase private bucket
+    const fileFilename = `${Date.now()}-${file.originalname}`;
+    const { error: fileUploadError } = await supabase.storage
+      .from("files")
+      .upload(fileFilename, file.buffer, { contentType: file.mimetype });
+    if (fileUploadError) {
+      return res.status(500).json({ error: "Failed to upload product file" });
+    }
+
+    // Upload cover to Supabase public bucket (optional)
+    let coverPublicUrl = null;
+    if (cover) {
+      const coverFilename = `${Date.now()}-${cover.originalname}`;
+      const { error: coverUploadError } = await supabase.storage
+        .from("covers")
+        .upload(coverFilename, cover.buffer, { contentType: cover.mimetype });
+      if (!coverUploadError) {
+        coverPublicUrl = supabase.storage.from("covers").getPublicUrl(coverFilename).data.publicUrl;
+      }
+    }
+
     const { rows } = await db.query(
       `INSERT INTO products
         (author_id, title, description, price, category, file_path, file_name, file_size, cover_path)
@@ -117,10 +139,10 @@ async function createProduct(req, res, next) {
         description || null,
         price,
         category,
-        `/uploads/files/${file.filename}`,
+        fileFilename,
         file.originalname,
         file.size,
-        cover ? `/uploads/covers/${cover.filename}` : null,
+        coverPublicUrl,
       ]
     );
 
@@ -176,7 +198,17 @@ async function updateProduct(req, res, next) {
     const { title, description, price, category } = result.data;
     const current = existing[0];
     const cover = req.files?.cover?.[0];
-    const newCoverPath = cover ? `/uploads/covers/${cover.filename}` : current.cover_path;
+
+    let newCoverPath = current.cover_path;
+    if (cover) {
+      const coverFilename = `${Date.now()}-${cover.originalname}`;
+      const { error: coverUploadError } = await supabase.storage
+        .from("covers")
+        .upload(coverFilename, cover.buffer, { contentType: cover.mimetype });
+      if (!coverUploadError) {
+        newCoverPath = supabase.storage.from("covers").getPublicUrl(coverFilename).data.publicUrl;
+      }
+    }
 
     const { rows } = await db.query(
       `UPDATE products

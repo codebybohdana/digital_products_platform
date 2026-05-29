@@ -1,6 +1,5 @@
 const db = require("../db/pool");
-const path = require("path");
-const fs = require("fs");
+const supabase = require("../lib/supabase");
 
 async function downloadFile(req, res, next) {
   try {
@@ -31,14 +30,17 @@ async function downloadFile(req, res, next) {
     }
 
     const { file_path, file_name } = products[0];
-    const absolutePath = path.join(__dirname, '../..', file_path);
 
-    // Check file exists on disk
-    if (!fs.existsSync(absolutePath)) {
-      return res.status(404).json({ error: "File not found on server" });
+    // Generate a signed URL (valid for 1 hour) with forced download
+    const { data, error } = await supabase.storage
+      .from("files")
+      .createSignedUrl(file_path, 3600, { download: file_name });
+
+    if (error || !data?.signedUrl) {
+      return res.status(500).json({ error: "Failed to generate download URL" });
     }
 
-    return res.download(absolutePath, file_name);
+    return res.json({ url: data.signedUrl });
   } catch (err) {
     next(err);
   }
