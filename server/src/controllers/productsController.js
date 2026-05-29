@@ -133,7 +133,7 @@ async function getMyProducts(req, res, next) {
     }
 
     const { rows } = await db.query(
-      `SELECT p.id, p.title, p.category, p.price, p.is_active,
+      `SELECT p.id, p.title, p.category, p.price, p.is_active, p.cover_path,
               p.created_at,
               COUNT(o.id) as sales_count,
               COALESCE(SUM(o.price_paid), 0) as total_revenue

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import api from '../api/client';
+import api, { getCoverUrl } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -197,7 +197,7 @@ export default function MyProducts() {
                       <div className="flex items-center gap-3">
                         {product.cover_path ? (
                           <img
-                            src={`http://localhost:3001${product.cover_path}`}
+                            src={getCoverUrl(product.cover_path!)}
                             alt={product.title}
                             className="w-10 h-10 object-cover rounded-lg shrink-0 aspect-square"
                           />
