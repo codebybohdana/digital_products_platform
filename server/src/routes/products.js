@@ -17,7 +17,7 @@ router.get("/", getProducts);
 router.get("/my", requireAuth, getMyProducts);
 router.get("/:id", getProduct);
 router.post("/", requireAuth, productStorage, createProduct);
-router.put("/:id", requireAuth, updateProduct);
+router.put("/:id", requireAuth, productStorage, updateProduct);
 router.patch("/:id/toggle", requireAuth, toggleProduct);
 router.delete("/:id", requireAuth, deleteProduct);
 

@@ -113,10 +113,10 @@ async function createProduct(req, res, next) {
         description || null,
         price,
         category,
-        file.path,
+        `/uploads/files/${file.filename}`,
         file.originalname,
         file.size,
-        cover ? cover.path : null,
+        cover ? `/uploads/covers/${cover.filename}` : null,
       ]
     );
 
@@ -171,17 +171,20 @@ async function updateProduct(req, res, next) {
 
     const { title, description, price, category } = result.data;
     const current = existing[0];
+    const cover = req.files?.cover?.[0];
+    const newCoverPath = cover ? `/uploads/covers/${cover.filename}` : current.cover_path;
 
     const { rows } = await db.query(
       `UPDATE products
-       SET title = $1, description = $2, price = $3, category = $4, updated_at = NOW()
-       WHERE id = $5 AND author_id = $6
-       RETURNING id, title, description, price, category, is_active`,
+       SET title = $1, description = $2, price = $3, category = $4, cover_path = $5, updated_at = NOW()
+       WHERE id = $6 AND author_id = $7
+       RETURNING id, title, description, price, category, cover_path, is_active`,
       [
         title ?? current.title,
         description ?? current.description,
         price ?? current.price,
         category ?? current.category,
+        newCoverPath,
         id,
         req.user.id,
       ]

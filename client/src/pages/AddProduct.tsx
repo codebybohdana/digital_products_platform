@@ -220,6 +220,9 @@ export default function AddProduct() {
           <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Cover Image <span className="font-normal text-gray-400 dark:text-gray-500">(JPG, PNG — optional)</span>
           </label>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            💡 Best results with a square image (1:1 ratio), e.g. 800×800px
+          </p>
           <input
             type="file"
             accept=".jpg,.jpeg,.png"

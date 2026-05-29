@@ -139,7 +139,7 @@ export default function EditProduct() {
             <img
               src={getCoverUrl(coverPath)}
               alt={title}
-              className="w-48 h-48 object-cover rounded-xl border border-gray-200 dark:border-gray-700"
+              className="w-full aspect-square object-cover rounded-xl border border-gray-200 dark:border-gray-700"
             />
           ) : (
             <div className="w-48 h-48 bg-gray-100 rounded-xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 flex items-center justify-center text-gray-400 text-sm">
@@ -153,6 +153,9 @@ export default function EditProduct() {
               Change Cover Image
               <span className="font-normal text-gray-400"> (JPG, PNG — optional)</span>
             </label>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              💡 Best results with a square image (1:1 ratio), e.g. 800×800px
+            </p>
             <input
               type="file"
               accept=".jpg,.jpeg,.png"

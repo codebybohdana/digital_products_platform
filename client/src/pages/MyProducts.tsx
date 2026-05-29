@@ -199,7 +199,7 @@ export default function MyProducts() {
                           <img
                             src={`http://localhost:3001${product.cover_path}`}
                             alt={product.title}
-                            className="w-10 h-10 object-cover rounded-lg shrink-0"
+                            className="w-10 h-10 object-cover rounded-lg shrink-0 aspect-square"
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 shrink-0 flex items-center justify-center">

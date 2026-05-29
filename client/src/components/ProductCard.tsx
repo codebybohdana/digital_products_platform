@@ -42,17 +42,19 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
           </button>
         )}
-        {product.cover_path ? (
-          <img
-            src={getCoverUrl(product.cover_path)}
-            alt={product.title}
-            className="w-full h-48 object-cover"
-          />
-        ) : (
-          <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400 text-sm dark:bg-gray-700">
-            No cover
-          </div>
-        )}
+        <div className="w-full aspect-square overflow-hidden">
+          {product.cover_path ? (
+            <img
+              src={getCoverUrl(product.cover_path)}
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm dark:bg-gray-700">
+              No cover
+            </div>
+          )}
+        </div>
         <div className="p-4">
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1 dark:text-gray-400">
             {product.category}
