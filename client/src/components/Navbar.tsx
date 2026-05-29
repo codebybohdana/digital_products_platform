@@ -37,45 +37,68 @@ function Navbar() {
     setDropdownOpen(false);
   };
 
+  const handleShopClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleAboutClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <nav className="bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
+          {/* Left: logo */}
           <Link to="/" className="flex items-center gap-2">
             <img src="/logo-icon.png" alt="" className="h-8 rounded-lg" />
             <span className="font-bold text-lg text-gray-900 dark:text-white">Folio</span>
           </Link>
 
-          <div className="flex items-center gap-6">
-            <Link to="/" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+          {/* Center: nav links */}
+          <nav className="flex items-center gap-8">
+            <Link to="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
               Home
             </Link>
+            <a href="/#products" onClick={handleShopClick} className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+              Shop
+            </a>
+            <a href="/#about" onClick={handleAboutClick} className="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+              About
+            </a>
+          </nav>
 
+          {/* Right: icon actions */}
+          <div className="flex items-center gap-1">
             {user ? (
               <>
                 {user.role === "author" && (
                   <Link
                     to="/products/add"
-                    className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                    aria-label="Add product"
+                    className="w-9 h-9 flex items-center justify-center rounded-full text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                   >
-                    Add Product
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                      <line x1="12" y1="5" x2="12" y2="19"/>
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
                   </Link>
                 )}
 
                 {user.role === "user" && (
                   <Link
-                    to="/cart"
-                    className="relative text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                    aria-label="Cart"
+                    to="/wishlist"
+                    aria-label="Saved products"
+                    className="relative w-9 h-9 flex items-center justify-center rounded-full text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                      <line x1="3" y1="6" x2="21" y2="6"/>
-                      <path d="M16 10a4 4 0 0 1-8 0"/>
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                     </svg>
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
-                        {cartCount}
+                    {wishlistedProducts.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                        {wishlistedProducts.length}
                       </span>
                     )}
                   </Link>
@@ -83,16 +106,18 @@ function Navbar() {
 
                 {user.role === "user" && (
                   <Link
-                    to="/wishlist"
-                    className="relative text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                    aria-label="Saved products"
+                    to="/cart"
+                    aria-label="Cart"
+                    className="relative w-9 h-9 flex items-center justify-center rounded-full text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                      <line x1="3" y1="6" x2="21" y2="6"/>
+                      <path d="M16 10a4 4 0 0 1-8 0"/>
                     </svg>
-                    {wishlistedProducts.length > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
-                        {wishlistedProducts.length}
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                        {cartCount}
                       </span>
                     )}
                   </Link>
@@ -102,9 +127,11 @@ function Navbar() {
                 <div ref={dropdownRef} className="relative">
                   <button
                     onClick={() => setDropdownOpen(o => !o)}
-                    className="flex items-center gap-1.5 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                    className="flex items-center gap-1 ml-1"
                   >
-                    {user.name}
+                    <div className="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-600 flex items-center justify-center text-white text-sm font-semibold">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="14" height="14"
@@ -114,7 +141,7 @@ function Navbar() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       viewBox="0 0 24 24"
-                      className={`transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                      className={`text-gray-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
                     >
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
@@ -196,12 +223,12 @@ function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/login" className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                <Link to="/login" className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 px-3 py-2">
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                  className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
                 >
                   Register
                 </Link>
@@ -210,7 +237,7 @@ function Navbar() {
 
             <button
               onClick={toggleTheme}
-              className="relative inline-flex items-center w-9 h-5 rounded-full transition-colors duration-300 focus:outline-none"
+              className="relative inline-flex items-center w-9 h-5 rounded-full transition-colors duration-300 focus:outline-none ml-2"
               style={{ backgroundColor: theme === 'dark' ? '#374151' : '#D1D5DB' }}
               aria-label="Toggle dark mode"
             >
