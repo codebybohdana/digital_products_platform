@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
   try {
     const { rows } = await db.query(
-      `SELECT p.id, p.title, p.price, p.category, p.cover_path,
+      `SELECT p.id, p.title, p.price, p.category, p.cover_path, p.author_id,
               u.name AS author_name
        FROM wishlists w
        JOIN products p ON w.product_id = p.id

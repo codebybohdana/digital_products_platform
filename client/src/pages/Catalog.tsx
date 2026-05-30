@@ -11,6 +11,7 @@ interface Product {
   title: string;
   price: string;
   category: string;
+  author_id: number;
   author_name: string;
   cover_path: string | null;
 }
